@@ -1094,12 +1094,6 @@ moves_loop:  // When in check, search starts here
                 // If we are on a cutNode but the ttMove is not assumed to fail high over current beta (~1 Elo)
                 else if (cutNode)
                     extension = -2;
-                
-                // Extend on unstable moves
-                if (std::abs(ss->staticEval) - std::abs((ss-1)->staticEval) >= stab
-                    || std::abs((ss-1)->staticEval) - std::abs(ss->staticEval) >= stab)
-                    extension += 1;
-
             }
 
             // Extension for capturing the previous moved piece (~0 Elo on STC, ~1 Elo on LTC)
@@ -1108,6 +1102,11 @@ moves_loop:  // When in check, search starts here
                                                   [type_of(pos.piece_on(move.to_sq()))]
                           > 3922)
                 extension = 1;
+            
+            // Extend on unstable moves
+            if (std::abs(ss->staticEval) - std::abs((ss-1)->staticEval) >= stab
+                || std::abs((ss-1)->staticEval) - std::abs(ss->staticEval) >= stab)
+                extension += 1;
         }
 
         // Add extension to new depth
