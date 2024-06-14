@@ -515,9 +515,6 @@ void Search::Worker::clear() {
     refreshTable.clear(networks[numaAccessToken]);
 }
 
-int stab = 16002;
-TUNE(stab);
-
 // Main search function for both PV and non-PV nodes.
 template<NodeType nodeType>
 Value Search::Worker::search(
@@ -1106,8 +1103,8 @@ moves_loop:  // When in check, search starts here
                 extension = 1;
             
             // Extend on unstable moves
-            if (std::abs(ss->staticEval) - std::abs((ss-1)->staticEval) >= stab
-                || std::abs((ss-1)->staticEval) - std::abs(ss->staticEval) >= stab)
+            if (std::abs(ss->staticEval) - std::abs((ss-1)->staticEval) >= 16157
+                || std::abs((ss-1)->staticEval) - std::abs(ss->staticEval) >= 16157)
                 extension += 1;
         }
 
