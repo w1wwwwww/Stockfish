@@ -518,9 +518,9 @@ void Search::Worker::clear() {
     refreshTable.clear(networks[numaAccessToken]);
 }
 
-int threshold = 16400;
+int threshold = 1640;
 int limit = 8;
-TUNE(threshold, limit);
+TUNE(SetRange(0, 32003), threshold, SetDefaultRange, limit);
 
 // Main search function for both PV and non-PV nodes.
 template<NodeType nodeType>
@@ -1115,7 +1115,8 @@ moves_loop:  // When in check, search starts here
             // Extend on unstable moves
             if ((std::abs(ss->staticEval) - std::abs((ss-1)->staticEval) >= threshold
                 || std::abs((ss-1)->staticEval) - std::abs(ss->staticEval) >= threshold)
-                && ss->ply < limit)
+                && ss->ply < limit
+                && !ss->inCheck && !(ss-1)->inCheck)
                 extension += 1;
         }
 
