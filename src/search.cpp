@@ -518,10 +518,6 @@ void Search::Worker::clear() {
     refreshTable.clear(networks[numaAccessToken]);
 }
 
-int dlimit = 8;
-int elimit = 2837;
-TUNE(dlimit, elimit);
-
 // Main search function for both PV and non-PV nodes.
 template<NodeType nodeType>
 Value Search::Worker::search(
@@ -1116,8 +1112,8 @@ moves_loop:  // When in check, search starts here
             
             // Extend on unstable moves
             else if (!ss->inCheck && !(ss-1)->inCheck
-                    && ss->ply < dlimit
-                    && std::abs(ss->staticEval - (ss-1)->staticEval) >= elimit)
+                    && ss->ply < 8
+                    && std::abs(ss->staticEval - (ss-1)->staticEval) >= 3006)
                 extension = 1;
         }
 
