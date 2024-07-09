@@ -1426,6 +1426,10 @@ moves_loop:  // When in check, search starts here
     return bestValue;
 }
 
+int base = 299;
+int prom = 200;
+int qdelta = 400;
+TUNE(base, prom, qdelta);
 
 // Quiescence search function, which is called by the main search function with zero depth, or
 // recursively with further decreasing depth per call. With depth <= 0, we "should" be using
@@ -1550,10 +1554,10 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
             return bestValue;
         }
 
-        futilityBase = ss->staticEval + ss->currentMove.type_of() != PROMOTION ? 474 : 474 + 216;
+        futilityBase = ss->staticEval + ss->currentMove.type_of() != PROMOTION ? base : base + prom;
 
-        // Early futility pruning
-        if (bestValue + futilityBase < alpha)
+        // Delta pruning done here removes the entire branch before movegen.
+        if (futilityBase + qdelta < alpha)
             return std::max(bestValue, futilityBase);
 
         if (bestValue > alpha)
