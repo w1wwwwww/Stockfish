@@ -1426,9 +1426,6 @@ moves_loop:  // When in check, search starts here
     return bestValue;
 }
 
-int base = 299;
-int prom = 200;
-TUNE(base, prom);
 
 // Quiescence search function, which is called by the main search function with zero depth, or
 // recursively with further decreasing depth per call. With depth <= 0, we "should" be using
@@ -1553,7 +1550,7 @@ Value Search::Worker::qsearch(Position& pos, Stack* ss, Value alpha, Value beta,
             return bestValue;
         }
 
-        futilityBase = ss->staticEval + ss->currentMove.type_of() != PROMOTION ? base : base + prom;
+        futilityBase = ss->staticEval + ss->currentMove.type_of() != PROMOTION ? 474 : 474 + 216;
 
         // Early futility pruning
         if (bestValue + futilityBase < alpha)
