@@ -22,6 +22,7 @@
 #include <future>
 #include <mutex>
 
+#include "../uci.h"
 #include "../evaluate.h"
 #include "../position.h"
 #include "sfen_stream.h"
@@ -31,11 +32,10 @@ namespace Stockfish::Tools {
 std::mutex                       mut;
 std::unique_ptr<SfenInputStream> istream;
 
-std::unique_ptr<PSVector> FilterWorker();
+std::unique_ptr<PSVector> Worker();
 
-std::unique_ptr<PSVector> FilterWorker() {
+std::unique_ptr<PSVector> Worker() {
     std::unique_ptr<PSVector> sfens = std::make_unique<PSVector>();
-
     mut.lock();
     while (!istream->eof())
     {
@@ -51,7 +51,6 @@ std::unique_ptr<PSVector> FilterWorker() {
         chess::Position pos = binpack::nodchip::pos_from_packed_sfen(
           std::bit_cast<binpack::nodchip::PackedSfen, PackedSfen>(val->sfen));
 
-        // If the piece values never change this can be optimized (we don't need to create spos)
         Stockfish::Position spos;
         StateInfo*          info = static_cast<StateInfo*>(malloc(sizeof(StateInfo)));
         spos.set(pos.fen(), false, info);
@@ -74,7 +73,7 @@ void FilterSmallnet(std::string in, std::string out, int threads) {
     std::vector<std::future<std::unique_ptr<PSVector>>> fsfens;
 
     for (int i = 0; i < threads; i++)
-        fsfens.push_back(std::async(std::launch::async, FilterWorker));
+        fsfens.push_back(std::async(std::launch::async, Worker));
 
     PSVector sfens;
     for (int i = 0; i < threads; i++)
