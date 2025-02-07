@@ -39,6 +39,9 @@
 #include "types.h"
 #include "ucioption.h"
 
+// Tools
+#include "tools/filter_smallnet.h"
+
 namespace Stockfish {
 
 constexpr auto BenchmarkCommand = "speedtest";
@@ -161,6 +164,17 @@ void UCIEngine::loop() {
                 files[1].first = files[1].second;
 
             engine.save_network(files);
+        }
+        // Tools
+        else if (token == "filter_smallnet")
+        {
+            is >> token;
+            std::string in = token;
+
+            is >> token;
+            std::string out = token;
+
+            Stockfish::Tools::FilterSmallnet(in, out, engine_options()["Threads"]);
         }
         else if (token == "--help" || token == "help" || token == "--license" || token == "license")
             sync_cout
