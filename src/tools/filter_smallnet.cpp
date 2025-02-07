@@ -29,6 +29,8 @@
 
 namespace Stockfish::Tools {
 
+std::atomic_uint64_t             read    = 0;
+std::atomic_uint64_t             written = 0;
 std::mutex                       mut;
 std::unique_ptr<SfenInputStream> istream;
 
@@ -48,6 +50,8 @@ std::unique_ptr<PSVector> Worker() {
             break;
         }
 
+        read++;
+
         chess::Position pos = binpack::nodchip::pos_from_packed_sfen(
           std::bit_cast<binpack::nodchip::PackedSfen, PackedSfen>(val->sfen));
 
@@ -59,6 +63,10 @@ std::unique_ptr<PSVector> Worker() {
             sfens->push_back(val.value());
 
         free(info);
+
+        written++;
+
+        std::cout << "Read: " << read << " Written: " << written << std::endl;
 
         mut.lock();
     }
