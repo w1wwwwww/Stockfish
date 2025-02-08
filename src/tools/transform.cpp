@@ -809,7 +809,7 @@ namespace Stockfish::Tools
             return lhs.second > rhs.second;
         });
 
-        for (const auto [move, score] : legal_moves)
+        for (const auto &[move, score] : legal_moves)
         {
             auto next_entry = curr_entry;
             next_entry.result = -next_entry.result;
