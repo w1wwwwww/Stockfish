@@ -30,6 +30,7 @@
 namespace Stockfish::Tools {
 
 std::atomic_uint64_t             read    = 0;
+std::atomic_uint64_t             pwritten = 0;
 std::atomic_uint64_t             written = 0;
 std::mutex                       mut;
 std::unique_ptr<SfenInputStream> istream;
@@ -60,13 +61,15 @@ std::unique_ptr<PSVector> Worker() {
         spos.set(pos.fen(), false, info);
 
         if (Stockfish::Eval::use_smallnet(spos))
+        {
             sfens->push_back(val.value());
+            pwritten.store(written.load());
+            written++;
+        }
 
         free(info);
 
-        written++;
-
-        std::cout << "Read: " << read << " Written: " << written << std::endl;
+        sync_cout << "Read: " << read << " Written: " << written << sync_endl;
 
         mut.lock();
     }
